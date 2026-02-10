@@ -15,6 +15,7 @@ import { ThemeProvider } from "@/contexts/theme-provider";
 import Destinations from "@/pages/destinations";
 import Gateways from "@/pages/gateways";
 import LoginPage from "@/pages/login";
+import NotFoundPage from "@/pages/not-found";
 import Profiles from "@/pages/profiles";
 import Rules from "@/pages/rules";
 import AOS from "aos";
@@ -78,6 +79,7 @@ function AllRoutes() {
       >
         <Route path="login" element={<LoginPage />} />
       </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
