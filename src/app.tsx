@@ -1,0 +1,63 @@
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+
+import ProtectedRoute from "@/components/protected-page";
+import { RouterTweaks } from "@/components/router-tweaks";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider, useAuth } from "@/contexts/auth-provider";
+import QueryProvider from "@/contexts/query-provider";
+import { ThemeProvider } from "@/contexts/theme-provider";
+import Gateways from "@/pages/gateways";
+import LoginPage from "@/pages/login";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { useLayoutEffect } from "react";
+
+function App() {
+  useLayoutEffect(() => {
+    AOS.init({
+      duration: 500,
+      once: true,
+      easing: "ease-in-out",
+      offset: -200,
+    });
+    return () => {
+      AOS.refreshHard();
+    };
+  }, []);
+  return (
+    <Router>
+      <AuthProvider>
+        <QueryProvider>
+          <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+            <AllRoutes />
+
+            <Toaster richColors />
+          </ThemeProvider>
+        </QueryProvider>
+      </AuthProvider>
+      <RouterTweaks />
+    </Router>
+  );
+}
+
+function AllRoutes() {
+  const { user } = useAuth();
+  return (
+    <Routes>
+      <Route
+        element={<ProtectedRoute visitCondition={!!user} route="/auth/login" />}
+      >
+        <Route index element={"App"} />
+        <Route path="gateways" element={<Gateways />} />
+      </Route>
+      <Route
+        path="/auth"
+        element={<ProtectedRoute visitCondition={!user} route="/" />}
+      >
+        <Route path="login" element={<LoginPage />} />
+      </Route>
+    </Routes>
+  );
+}
+
+export default App;
