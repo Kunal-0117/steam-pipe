@@ -10,6 +10,7 @@ import Destinations from "@/pages/destinations";
 import Gateways from "@/pages/gateways";
 import LoginPage from "@/pages/login";
 import Profiles from "@/pages/profiles";
+import Rules from "@/pages/rules";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useLayoutEffect } from "react";
@@ -53,6 +54,7 @@ function AllRoutes() {
         <Route path="gateways" element={<Gateways />} />
         <Route path="profiles" element={<Profiles />} />
         <Route path="destinations" element={<Destinations />} />
+        <Route path="rules" element={<Rules />} />
       </Route>
       <Route
         path="/auth"
