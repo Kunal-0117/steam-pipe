@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/contexts/auth-provider";
 import QueryProvider from "@/contexts/query-provider";
 import { ThemeProvider } from "@/contexts/theme-provider";
+import Destinations from "@/pages/destinations";
 import Gateways from "@/pages/gateways";
 import LoginPage from "@/pages/login";
 import Profiles from "@/pages/profiles";
@@ -51,6 +52,7 @@ function AllRoutes() {
         <Route index element={"App"} />
         <Route path="gateways" element={<Gateways />} />
         <Route path="profiles" element={<Profiles />} />
+        <Route path="destinations" element={<Destinations />} />
       </Route>
       <Route
         path="/auth"
