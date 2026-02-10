@@ -8,6 +8,7 @@ import QueryProvider from "@/contexts/query-provider";
 import { ThemeProvider } from "@/contexts/theme-provider";
 import Gateways from "@/pages/gateways";
 import LoginPage from "@/pages/login";
+import Profiles from "@/pages/profiles";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useLayoutEffect } from "react";
@@ -49,6 +50,7 @@ function AllRoutes() {
       >
         <Route index element={"App"} />
         <Route path="gateways" element={<Gateways />} />
+        <Route path="profiles" element={<Profiles />} />
       </Route>
       <Route
         path="/auth"

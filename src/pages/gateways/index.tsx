@@ -23,7 +23,7 @@ import { Download, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { GatewayForm } from "./form";
 
-const Gateways = () => {
+export default function GatewaysPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGateway, setEditingGateway] = useState<IGateway | null>(null);
 
@@ -171,6 +171,4 @@ const Gateways = () => {
       </Dialog>
     </div>
   );
-};
-
-export default Gateways;
+}
