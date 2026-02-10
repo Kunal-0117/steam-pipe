@@ -1,8 +1,14 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Outlet,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
 
 import ProtectedRoute from "@/components/protected-page";
 import { RouterTweaks } from "@/components/router-tweaks";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/auth-provider";
 import QueryProvider from "@/contexts/query-provider";
 import { ThemeProvider } from "@/contexts/theme-provider";
@@ -14,6 +20,7 @@ import Rules from "@/pages/rules";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useLayoutEffect } from "react";
+import AppLayout from "./layouts/app";
 
 function App() {
   useLayoutEffect(() => {
@@ -32,9 +39,10 @@ function App() {
       <AuthProvider>
         <QueryProvider>
           <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-            <AllRoutes />
-
-            <Toaster richColors />
+            <TooltipProvider>
+              <AllRoutes />
+              <Toaster richColors />
+            </TooltipProvider>
           </ThemeProvider>
         </QueryProvider>
       </AuthProvider>
@@ -48,7 +56,11 @@ function AllRoutes() {
   return (
     <Routes>
       <Route
-        element={<ProtectedRoute visitCondition={!!user} route="/auth/login" />}
+        element={
+          <ProtectedRoute visitCondition={!!user} route="/auth/login">
+            <AppLayout />
+          </ProtectedRoute>
+        }
       >
         <Route index element={"App"} />
         <Route path="gateways" element={<Gateways />} />
@@ -58,7 +70,11 @@ function AllRoutes() {
       </Route>
       <Route
         path="/auth"
-        element={<ProtectedRoute visitCondition={!user} route="/" />}
+        element={
+          <ProtectedRoute visitCondition={!user} route="/">
+            <Outlet />
+          </ProtectedRoute>
+        }
       >
         <Route path="login" element={<LoginPage />} />
       </Route>

@@ -1,14 +1,16 @@
 import React from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface ProtectedRouteProps {
   visitCondition: boolean;
   route: string;
+  children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   visitCondition,
   route,
+  children,
 }) => {
   const location = useLocation();
 
@@ -18,7 +20,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Render children if authenticated
-  return <Outlet />;
+  return children;
 };
 
 export default ProtectedRoute;
