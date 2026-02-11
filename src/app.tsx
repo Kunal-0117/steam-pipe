@@ -13,6 +13,7 @@ import { AuthProvider, useAuth } from "@/contexts/auth-provider";
 import QueryProvider from "@/contexts/query-provider";
 import { ThemeProvider } from "@/contexts/theme-provider";
 import Destinations from "@/pages/destinations";
+import Devices from "@/pages/devices";
 import Gateways from "@/pages/gateways";
 import LoginPage from "@/pages/login";
 import NotFoundPage from "@/pages/not-found";
@@ -66,6 +67,7 @@ function AllRoutes() {
         <Route index element={"App"} />
         <Route path="gateways" element={<Gateways />} />
         <Route path="profiles" element={<Profiles />} />
+        <Route path="devices" element={<Devices />} />
         <Route path="destinations" element={<Destinations />} />
         <Route path="rules" element={<Rules />} />
       </Route>

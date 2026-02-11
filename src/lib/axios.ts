@@ -17,22 +17,9 @@ makeRequest.interceptors.response.use(
       "Oops! Something went wrong. Please try again later.";
     error.message = defaultErrorMessage;
 
-    if (error.response?.data?.message) {
-      const message = error.response.data.message;
-      //show only first message, we will see how to handle multiple server errors
-      if (typeof message === "string") error.message = message;
-      // who knows if this ends up being an array
-      else if (Array.isArray(message))
-        error.message = message?.[0] ?? defaultErrorMessage;
-    } else if (error.response?.data?.messages) {
-      const messages = error.response.data.messages;
-      //Need to handle this error type.
-      if (typeof messages === "string") error.message = messages;
-      else if (Array.isArray(messages)) {
-        //show only first message, we will see how to handle multiple server errors
-        if (typeof messages[0] === "string") error.message = messages[0];
-        else error.message = messages[0]?.description ?? defaultErrorMessage;
-      }
+    if (error.response?.data?.message || error.response?.data.detail) {
+      const message = error.response.data.message || error.response.data.detail;
+      error.message = message;
     } else if (error.response) {
       switch (error.response.data?.statusCode ?? error.response.status) {
         case 400:
@@ -83,6 +70,10 @@ makeRequest.interceptors.response.use(
         "Network error: We couldn't reach the server. Please check your internet connection and try again.";
     } else {
       error.message = `An unexpected error occurred: ${error.message}`;
+    }
+
+    if (typeof error.message !== "string") {
+      error.message = defaultErrorMessage;
     }
 
     throw error;

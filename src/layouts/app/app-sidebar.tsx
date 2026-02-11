@@ -1,6 +1,7 @@
 import {
   IconDashboard,
   IconDatabaseExport,
+  IconDeviceIpad,
   IconFileStack,
   IconHelp,
   IconInnerShadowTop,
@@ -19,10 +20,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { NavMain } from "@/layouts/app/nav-main";
 import { NavSecondary } from "@/layouts/app/nav-secondary";
 import { NavUser } from "@/layouts/app/nav-user";
+import { useLocation } from "react-router-dom";
 
 const data = {
   user: {
@@ -45,6 +48,11 @@ const data = {
       title: "Profiles",
       url: "/profiles",
       icon: IconFileStack,
+    },
+    {
+      title: "Devices",
+      url: "/devices",
+      icon: IconDeviceIpad,
     },
     {
       title: "Destinations",
@@ -72,6 +80,14 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { setOpenMobile } = useSidebar();
+  const location = useLocation();
+
+  // Close sidebar on mobile when navigating
+  React.useEffect(() => {
+    setOpenMobile(false);
+  }, [location.pathname, setOpenMobile]);
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
