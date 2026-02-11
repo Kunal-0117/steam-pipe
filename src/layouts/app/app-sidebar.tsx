@@ -4,6 +4,7 @@ import {
   IconDeviceIpad,
   IconFileStack,
   IconHelp,
+  IconHistory,
   IconInnerShadowTop,
   IconRouter,
   IconSettings,
@@ -58,6 +59,11 @@ const data = {
       title: "Destinations",
       url: "/destinations",
       icon: IconDatabaseExport,
+    },
+    {
+      title: "Decoded Data",
+      url: "/decoded-data",
+      icon: IconHistory,
     },
     {
       title: "Rules",
