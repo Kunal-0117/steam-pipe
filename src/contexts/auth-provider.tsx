@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       if (isLocalStorageAvailable) {
         const storedUser = localStorage.getItem(
-          AUTH_KEY // process.env.NEXT_PUBLIC_LOCALSTORAGE_USER_KEY
+          AUTH_KEY, // process.env.NEXT_PUBLIC_LOCALSTORAGE_USER_KEY
         );
         if (storedUser) {
           return JSON.parse(storedUser) || false;

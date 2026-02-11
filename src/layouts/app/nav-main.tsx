@@ -1,5 +1,5 @@
 import { type Icon } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import {
   SidebarGroup,
@@ -18,13 +18,19 @@ export function NavMain({
     icon?: Icon;
   }[];
 }) {
+  const location = useLocation();
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                isActive={location.pathname === item.url}
+              >
                 <Link to={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>

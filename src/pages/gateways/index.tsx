@@ -1,3 +1,5 @@
+import { ErrorState } from "@/components/error-state";
+import { LoadingState } from "@/components/loading-state";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,7 +21,7 @@ import {
   useGetGatewaysQuery,
 } from "@/features/gateways/hooks";
 import type { IGateway } from "@/features/gateways/types";
-import { Download, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { Download, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { GatewayForm } from "./form";
 
@@ -27,7 +29,12 @@ export default function GatewaysPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGateway, setEditingGateway] = useState<IGateway | null>(null);
 
-  const { data: gateways = [], isLoading } = useGetGatewaysQuery();
+  const {
+    data: gateways = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useGetGatewaysQuery();
 
   const deleteMutation = useDeleteGatewayMutation();
   const downloadMutation = useDownloadGatewayConfigMutation();
@@ -42,99 +49,96 @@ export default function GatewaysPage() {
     setIsModalOpen(true);
   };
 
+  if (isLoading) return <LoadingState />;
+  if (isError) return <ErrorState onRetry={() => refetch()} />;
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Gateways</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Gateways</h1>
         <Button onClick={openCreateModal}>
           <Plus className="mr-2 h-4 w-4" />
           Create Gateway
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center p-8">
-          <RefreshCw className="animate-spin h-8 w-8 text-primary" />
-        </div>
-      ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
+      <div className="rounded-md border animate-in fade-in duration-500">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>EUI</TableHead>
+              <TableHead>Region</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {gateways.length === 0 ? (
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>EUI</TableHead>
-                <TableHead>Region</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  No gateways found. Create one to get started.
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {gateways.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center py-8 text-muted-foreground"
-                  >
-                    No gateways found. Create one to get started.
+            ) : (
+              gateways.map((gw) => (
+                <TableRow key={gw.Id}>
+                  <TableCell className="font-medium">
+                    {gw.Name || gw.Id}
+                  </TableCell>
+                  <TableCell>{gw.LoRaWAN?.GatewayEui || "N/A"}</TableCell>
+                  <TableCell>{gw.LoRaWAN?.RfRegion || "N/A"}</TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {gw.Description || "-"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => downloadMutation.mutate(gw.Id)}
+                        disabled={downloadMutation.isPending}
+                        title="Download Configuration"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => openEditModal(gw)}
+                        title="Edit Gateway"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Are you sure you want to delete this gateway?",
+                            )
+                          ) {
+                            deleteMutation.mutate(gw.Id);
+                          }
+                        }}
+                        disabled={deleteMutation.isPending}
+                        title="Delete Gateway"
+                        className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
-              ) : (
-                gateways.map((gw) => (
-                  <TableRow key={gw.Id}>
-                    <TableCell className="font-medium">
-                      {gw.Name || gw.Id}
-                    </TableCell>
-                    <TableCell>{gw.LoRaWAN?.GatewayEui || "N/A"}</TableCell>
-                    <TableCell>{gw.LoRaWAN?.RfRegion || "N/A"}</TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {gw.Description || "-"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => downloadMutation.mutate(gw.Id)}
-                          disabled={downloadMutation.isPending}
-                          title="Download Configuration"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => openEditModal(gw)}
-                          title="Edit Gateway"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                "Are you sure you want to delete this gateway?",
-                              )
-                            ) {
-                              deleteMutation.mutate(gw.Id);
-                            }
-                          }}
-                          disabled={deleteMutation.isPending}
-                          title="Delete Gateway"
-                          className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-[500px]">
