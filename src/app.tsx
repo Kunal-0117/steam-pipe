@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/auth-provider";
 import QueryProvider from "@/contexts/query-provider";
 import { ThemeProvider } from "@/contexts/theme-provider";
+import Dashboard from "@/pages/dashboard";
 import DecodedData from "@/pages/decoded-data";
 import Destinations from "@/pages/destinations";
 import Devices from "@/pages/devices";
@@ -65,7 +66,7 @@ function AllRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index element={"App"} />
+        <Route index element={<Dashboard />} />
         <Route path="gateways" element={<Gateways />} />
         <Route path="profiles" element={<Profiles />} />
         <Route path="devices" element={<Devices />} />
