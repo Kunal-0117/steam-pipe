@@ -1,5 +1,6 @@
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,7 +21,8 @@ import {
   useGetRulesQuery,
 } from "@/features/rules/hooks";
 import type { IRule } from "@/features/rules/types";
-import { FileText, Pencil, Plus, Trash2 } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { Calendar, FileText, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { RuleForm } from "./form";
 
@@ -59,8 +61,9 @@ export default function RulesPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Rule Name</TableHead>
-              <TableHead>SQL</TableHead>
-              <TableHead>Description</TableHead>
+              <TableHead>Topic Pattern</TableHead>
+              <TableHead>Created At</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -68,7 +71,7 @@ export default function RulesPage() {
             {rules.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={5}
                   className="text-center py-8 text-muted-foreground"
                 >
                   No rules found. Create one to get started.
@@ -78,18 +81,41 @@ export default function RulesPage() {
               rules.map((rule) => (
                 <TableRow key={rule.ruleName}>
                   <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-primary" />
-                      {rule.ruleName}
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-primary" />
+                        {rule.ruleName}
+                      </div>
+                      {rule.ruleArn && (
+                        <span className="text-xs text-muted-foreground font-mono mt-1 truncate max-w-[200px]">
+                          {rule.ruleArn}
+                        </span>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">
-                      {rule.topicRulePayload?.sql}
+                    <code className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono">
+                      {rule.topicPattern || "N/A"}
                     </code>
                   </TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {rule.topicRulePayload?.description || "-"}
+                  <TableCell>
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <Calendar className="h-3.5 w-3.5" />
+                      {rule.createdAt
+                        ? format(parseISO(rule.createdAt), "MMM d, yyyy")
+                        : "N/A"}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="flat"
+                      colorVariant={
+                        rule.ruleDisabled ? "destructive" : "success"
+                      }
+                      className="font-normal"
+                    >
+                      {rule.ruleDisabled ? "Disabled" : "Enabled"}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">

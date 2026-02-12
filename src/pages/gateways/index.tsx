@@ -1,5 +1,6 @@
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,6 +22,7 @@ import {
   useGetGatewaysQuery,
 } from "@/features/gateways/hooks";
 import type { IGateway } from "@/features/gateways/types";
+import { differenceInHours, format, parseISO } from "date-fns";
 import { Download, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { GatewayForm } from "./form";
@@ -69,6 +71,8 @@ export default function GatewaysPage() {
               <TableHead>Name</TableHead>
               <TableHead>EUI</TableHead>
               <TableHead>Region</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Last Updated</TableHead>
               <TableHead>Description</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -77,7 +81,7 @@ export default function GatewaysPage() {
             {gateways.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={7}
                   className="text-center py-8 text-muted-foreground"
                 >
                   No gateways found. Create one to get started.
@@ -91,6 +95,31 @@ export default function GatewaysPage() {
                   </TableCell>
                   <TableCell>{gw.LoRaWAN?.GatewayEui || "N/A"}</TableCell>
                   <TableCell>{gw.LoRaWAN?.RfRegion || "N/A"}</TableCell>
+                  <TableCell>
+                    {gw.LastLinkedUpdated ? (
+                      differenceInHours(
+                        new Date(),
+                        parseISO(gw.LastLinkedUpdated),
+                      ) <= 2 ? (
+                        <Badge variant="flat" colorVariant="success">
+                          Active
+                        </Badge>
+                      ) : (
+                        <Badge variant="flat" colorVariant="destructive">
+                          Inactive
+                        </Badge>
+                      )
+                    ) : (
+                      <Badge variant="flat" colorVariant="secondary">
+                        Inactive
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {gw.LastLinkedUpdated
+                      ? format(parseISO(gw.LastLinkedUpdated), "PPp")
+                      : "Never"}
+                  </TableCell>
                   <TableCell className="max-w-xs truncate">
                     {gw.Description || "-"}
                   </TableCell>

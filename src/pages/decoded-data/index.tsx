@@ -54,7 +54,7 @@ export default function DecodedDataPage() {
     device_id: "all",
     start_date: "",
     end_date: "",
-    status_filter: "",
+    status_filter: "all",
   });
 
   const { data: devicesData } = useGetDevicesQuery({ maxResults: 100 });
@@ -66,7 +66,8 @@ export default function DecodedDataPage() {
     device_id: filters.device_id === "all" ? undefined : filters.device_id,
     start_date: filters.start_date || undefined,
     end_date: filters.end_date || undefined,
-    status_filter: filters.status_filter || undefined,
+    status_filter:
+      filters.status_filter === "all" ? undefined : filters.status_filter,
   };
 
   const { data, isLoading, isError, refetch } =
@@ -80,7 +81,7 @@ export default function DecodedDataPage() {
       device_id: "all",
       start_date: "",
       end_date: "",
-      status_filter: "",
+      status_filter: "all",
     });
     setPage(0);
   };
@@ -171,7 +172,7 @@ export default function DecodedDataPage() {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="leak_detected">Leak Detected</SelectItem>
                     <SelectItem value="low_battery">Low Battery</SelectItem>
                   </SelectContent>
@@ -277,16 +278,18 @@ export default function DecodedDataPage() {
                     <div className="flex justify-center gap-1">
                       {record.leak_detected && (
                         <Badge
-                          variant="destructive"
-                          className="text-[10px] h-5 px-1.5 uppercase"
+                          variant="flat"
+                          colorVariant="destructive"
+                          className="text-xs h-5 px-1.5 uppercase"
                         >
                           Leak
                         </Badge>
                       )}
                       {record.low_battery && (
                         <Badge
-                          variant="outline"
-                          className="text-[10px] h-5 px-1.5 uppercase border-yellow-500 text-yellow-600 bg-yellow-50 dark:bg-yellow-900/10"
+                          variant="bordered"
+                          colorVariant="warning"
+                          className="text-xs h-5 px-1.5 uppercase"
                         >
                           Low Batt
                         </Badge>

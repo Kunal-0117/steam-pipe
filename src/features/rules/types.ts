@@ -18,8 +18,10 @@ export interface IRulePayload {
 export interface IRule {
   ruleArn: string;
   ruleName: string;
+  topicPattern: string;
+  createdAt: string;
+  ruleDisabled: boolean;
   topicRulePayload?: IRulePayload;
-  createdAt?: string;
 }
 
 export interface IRuleFormValues {

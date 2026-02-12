@@ -5,6 +5,7 @@ export interface IGateway {
   Description?: string;
   LoRaWAN: ILoRaWan;
   LastUplinkReceivedAt?: string;
+  LastLinkedUpdated?: string;
 }
 
 export interface ILoRaWan {

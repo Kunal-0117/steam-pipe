@@ -1,6 +1,7 @@
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
 import { TableSkeleton } from "@/components/table-skeleton";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,7 +24,7 @@ import {
   useGetDeviceProfilesQuery,
   useGetServiceProfilesQuery,
 } from "@/features/profiles/hooks";
-import { Plus, Trash2 } from "lucide-react";
+import { Cpu, Globe, Layers, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { DeviceProfileForm } from "./device-profile-form";
 import { ServiceProfileForm } from "./service-profile-form";
@@ -95,7 +96,9 @@ export default function ProfilesPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead>ID</TableHead>
+                    <TableHead>Region</TableHead>
+                    <TableHead>MAC Version</TableHead>
+                    <TableHead>Capabilities</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -103,7 +106,7 @@ export default function ProfilesPage() {
                   {deviceProfiles.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={3}
+                        colSpan={5}
                         className="text-center py-8 text-muted-foreground"
                       >
                         No device profiles found.
@@ -111,12 +114,43 @@ export default function ProfilesPage() {
                     </TableRow>
                   ) : (
                     deviceProfiles.map((p) => (
-                      <TableRow key={p.Id}>
+                      <TableRow key={p.Id} className="group">
                         <TableCell className="font-medium">
-                          {p.Name || p.Id}
+                          <div className="flex items-center gap-2">
+                            <Cpu className="h-4 w-4 text-muted-foreground" />
+                            {p.Name || p.Id}
+                          </div>
                         </TableCell>
-                        <TableCell className="font-mono text-xs">
-                          {p.Id}
+                        <TableCell>
+                          <div className="flex items-center gap-1.5">
+                            <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                            {p.RfRegion}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5">
+                            <Layers className="h-3.5 w-3.5 text-muted-foreground" />
+                            {p.MacVersion}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            {p.SupportsClassB && (
+                              <Badge variant="flat" colorVariant="secondary">
+                                Class B
+                              </Badge>
+                            )}
+                            {p.SupportsClassC && (
+                              <Badge variant="flat" colorVariant="secondary">
+                                Class C
+                              </Badge>
+                            )}
+                            {!p.SupportsClassB && !p.SupportsClassC && (
+                              <Badge variant="flat" colorVariant="secondary">
+                                Class A
+                              </Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
@@ -133,7 +167,7 @@ export default function ProfilesPage() {
                             }}
                             disabled={deleteDPMutation.isPending}
                             title="Delete Profile"
-                            className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                            className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -153,7 +187,7 @@ export default function ProfilesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>ID</TableHead>
+                  <TableHead>Gateway Metadata</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -169,12 +203,22 @@ export default function ProfilesPage() {
                   </TableRow>
                 ) : (
                   serviceProfiles.map((p) => (
-                    <TableRow key={p.Id}>
+                    <TableRow key={p.Id} className="group">
                       <TableCell className="font-medium">
-                        {p.Name || p.Id}
+                        <div className="flex items-center gap-2">
+                          <Layers className="h-4 w-4 text-muted-foreground" />
+                          {p.Name || p.Id}
+                        </div>
                       </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {p.Id}
+                      <TableCell>
+                        <Badge
+                          variant={"flat"}
+                          colorVariant={
+                            p.AddGwMetadata ? "success" : "secondary"
+                          }
+                        >
+                          {p.AddGwMetadata ? "Enabled" : "Disabled"}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
@@ -191,7 +235,7 @@ export default function ProfilesPage() {
                           }}
                           disabled={deleteSPMutation.isPending}
                           title="Delete Profile"
-                          className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

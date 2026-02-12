@@ -15,7 +15,7 @@ export interface IDecodedDataFilters {
   device_id?: string;
   start_date?: string;
   end_date?: string;
-  status_filter?: "leak_detected" | "low_battery" | "";
+  status_filter?: "leak_detected" | "low_battery" | "all";
   limit?: number;
   offset?: number;
 }
