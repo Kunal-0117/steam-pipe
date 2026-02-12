@@ -101,18 +101,23 @@ export default function DevicesPage() {
 
   return (
     <div className="p-4 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-foreground">Wireless Devices</h1>
-        <div className="flex gap-2">
-          <Button onClick={openCreateModal}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Device
-          </Button>
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Wireless Devices
+          </h1>
+          <p className="text-muted-foreground">
+            Manage your LoRaWAN devices and view their current status.
+          </p>
         </div>
+        <Button onClick={openCreateModal} className="w-full md:w-auto">
+          <Plus className="mr-2 h-4 w-4" />
+          Create Device
+        </Button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 bg-muted/30 p-4 rounded-lg border">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 bg-card p-4 rounded-lg border">
+        <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by name..."
@@ -122,75 +127,86 @@ export default function DevicesPage() {
           />
         </div>
 
-        <Select
-          value={filters.destinationName}
-          onValueChange={(value) =>
-            setFilters((prev) => ({
-              ...prev,
-              destinationName: value,
-              nextToken: undefined,
-            }))
-          }
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="All Destinations" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Destinations</SelectItem>
-            {destinationsData.map((d) => (
-              <SelectItem key={d.Name} value={d.Name}>
-                {d.Name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select
+            value={filters.destinationName}
+            onValueChange={(value) =>
+              setFilters((prev) => ({
+                ...prev,
+                destinationName: value,
+                nextToken: undefined,
+              }))
+            }
+          >
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="All Destinations" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Destinations</SelectItem>
+              {destinationsData.map((d) => (
+                <SelectItem key={d.Name} value={d.Name}>
+                  {d.Name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={
-            filters.isOnline === undefined
-              ? "all"
-              : filters.isOnline
-                ? "online"
-                : "offline"
-          }
-          onValueChange={(value) =>
-            setFilters((prev) => ({
-              ...prev,
-              isOnline:
-                value === "all" ? undefined : value === "online" ? true : false,
-              nextToken: undefined,
-            }))
-          }
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="online">Online</SelectItem>
-            <SelectItem value="offline">Offline</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select
+            value={
+              filters.isOnline === undefined
+                ? "all"
+                : filters.isOnline
+                  ? "online"
+                  : "offline"
+            }
+            onValueChange={(value) =>
+              setFilters((prev) => ({
+                ...prev,
+                isOnline:
+                  value === "all"
+                    ? undefined
+                    : value === "online"
+                      ? true
+                      : false,
+                nextToken: undefined,
+              }))
+            }
+          >
+            <SelectTrigger className="w-full md:w-[150px]">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="online">Online</SelectItem>
+              <SelectItem value="offline">Offline</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => refetch()}
-          title="Refresh list"
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-        </Button>
-        {(filters.nextToken ||
-          filters.name ||
-          filters.destinationName !== "all" ||
-          filters.isOnline !== undefined) && (
-          <Button variant="outline" size="sm" onClick={handleResetFilters}>
-            Reset
-          </Button>
-        )}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => refetch()}
+              title="Refresh list"
+              className="shrink-0"
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+              />
+            </Button>
+            {(filters.nextToken ||
+              filters.name ||
+              filters.destinationName !== "all" ||
+              filters.isOnline !== undefined) && (
+              <Button variant="outline" size="sm" onClick={handleResetFilters}>
+                Reset
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-card animate-in fade-in duration-500 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

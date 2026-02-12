@@ -55,16 +55,21 @@ export default function GatewaysPage() {
   if (isError) return <ErrorState onRetry={() => refetch()} />;
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Gateways</h1>
-        <Button onClick={openCreateModal}>
+    <div className="p-4 space-y-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Gateways</h1>
+          <p className="text-muted-foreground">
+            Manage your LoRaWAN gateways and monitor their connectivity status.
+          </p>
+        </div>
+        <Button onClick={openCreateModal} className="w-full md:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Create Gateway
         </Button>
       </div>
 
-      <div className="rounded-md border animate-in fade-in duration-500">
+      <div className="rounded-md border bg-card animate-in fade-in duration-500 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -126,8 +131,8 @@ export default function GatewaysPage() {
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant="ghost"
+                        size="icon-sm"
                         onClick={() => downloadMutation.mutate(gw.Id)}
                         disabled={downloadMutation.isPending}
                         title="Download Configuration"
@@ -135,16 +140,16 @@ export default function GatewaysPage() {
                         <Download className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant="ghost"
+                        size="icon-sm"
                         onClick={() => openEditModal(gw)}
                         title="Edit Gateway"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant="ghost"
+                        size="icon-sm"
                         onClick={() => {
                           if (
                             window.confirm(
@@ -156,7 +161,7 @@ export default function GatewaysPage() {
                         }}
                         disabled={deleteMutation.isPending}
                         title="Delete Gateway"
-                        className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                        className="text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

@@ -213,7 +213,7 @@ export default function DecodedDataPage() {
         </Card>
       )}
 
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-card overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

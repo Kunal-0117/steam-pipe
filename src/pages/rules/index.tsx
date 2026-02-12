@@ -47,16 +47,21 @@ export default function RulesPage() {
   if (isError) return <ErrorState onRetry={() => refetch()} />;
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">IoT Rules</h1>
-        <Button onClick={openCreateModal}>
+    <div className="p-4 space-y-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">IoT Rules</h1>
+          <p className="text-muted-foreground">
+            Configure rules to process and route your incoming IoT data.
+          </p>
+        </div>
+        <Button onClick={openCreateModal} className="w-full md:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Create Rule
         </Button>
       </div>
 
-      <div className="rounded-md border animate-in fade-in duration-500">
+      <div className="rounded-md border bg-card animate-in fade-in duration-500 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -120,16 +125,16 @@ export default function RulesPage() {
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant="ghost"
+                        size="icon-sm"
                         onClick={() => openEditModal(rule)}
                         title="Edit Rule"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant="ghost"
+                        size="icon-sm"
                         onClick={() => {
                           if (
                             window.confirm(
