@@ -44,32 +44,32 @@ export default function DashboardPage() {
       value: gateways.length,
       icon: Network,
       description: "Active LoRaWAN gateways",
-      color: "text-blue-500",
-      bg: "bg-blue-50 dark:bg-blue-900/10",
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
     {
       title: "Connected Devices",
       value: devices.length,
       icon: Cpu,
       description: "Provisioned endpoints",
-      color: "text-purple-500",
-      bg: "bg-purple-50 dark:bg-purple-900/10",
+      color: "text-info",
+      bg: "bg-info/10",
     },
     {
       title: "Active Rules",
       value: rules.filter((r) => !r.ruleDisabled).length,
       icon: ShieldCheck,
       description: "Data processing pipelines",
-      color: "text-green-500",
-      bg: "bg-green-50 dark:bg-green-900/10",
+      color: "text-success",
+      bg: "bg-success/10",
     },
     {
       title: "Recent Uplinks",
       value: recentData?.items?.length || 0,
       icon: Activity,
       description: "Messages in last 24h",
-      color: "text-orange-500",
-      bg: "bg-orange-50 dark:bg-orange-900/10",
+      color: "text-warning",
+      bg: "bg-warning/10",
     },
   ];
 
@@ -232,7 +232,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card className="border-none shadow-sm hover:ring-1 hover:ring-primary/20 transition-all cursor-pointer group">
           <CardHeader className="pb-2">
-            <RouterIcon className="h-8 w-8 text-blue-500 mb-2 group-hover:scale-110 transition-transform" />
+            <RouterIcon className="h-8 w-8 text-info mb-2 group-hover:scale-110 transition-transform" />
             <CardTitle className="text-lg">Gateways</CardTitle>
           </CardHeader>
           <CardContent>
@@ -253,7 +253,7 @@ export default function DashboardPage() {
 
         <Card className="border-none shadow-sm hover:ring-1 hover:ring-primary/20 transition-all cursor-pointer group">
           <CardHeader className="pb-2">
-            <Cpu className="h-8 w-8 text-purple-500 mb-2 group-hover:scale-110 transition-transform" />
+            <Cpu className="h-8 w-8 text-primary mb-2 group-hover:scale-110 transition-transform" />
             <CardTitle className="text-lg">Devices</CardTitle>
           </CardHeader>
           <CardContent>
@@ -274,7 +274,7 @@ export default function DashboardPage() {
 
         <Card className="border-none shadow-sm hover:ring-1 hover:ring-primary/20 transition-all cursor-pointer group">
           <CardHeader className="pb-2">
-            <ShieldCheck className="h-8 w-8 text-green-500 mb-2 group-hover:scale-110 transition-transform" />
+            <ShieldCheck className="h-8 w-8 text-success mb-2 group-hover:scale-110 transition-transform" />
             <CardTitle className="text-lg">Processing Rules</CardTitle>
           </CardHeader>
           <CardContent>
