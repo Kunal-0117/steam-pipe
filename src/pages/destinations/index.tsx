@@ -20,6 +20,7 @@ import {
   useGetDestinationsQuery,
 } from "@/features/destinations/hooks";
 import type { IDestination } from "@/features/destinations/types";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
 import { Pencil, Plus, Send, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { DestinationForm } from "./form";
@@ -36,6 +37,7 @@ export default function DestinationsPage() {
     refetch,
   } = useGetDestinationsQuery();
   const deleteMutation = useDeleteDestinationMutation();
+  const deleteConfirm = useDeleteConfirm();
 
   const openCreateModal = () => {
     setEditingDestination(null);
@@ -116,13 +118,9 @@ export default function DestinationsPage() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => {
-                          if (
-                            window.confirm(
-                              "Are you sure you want to delete this destination?",
-                            )
-                          ) {
-                            deleteMutation.mutate(d.Name);
-                          }
+                          deleteConfirm({
+                            onConfirm: () => deleteMutation.mutateAsync(d.Name),
+                          });
                         }}
                         disabled={deleteMutation.isPending}
                         title="Delete Destination"

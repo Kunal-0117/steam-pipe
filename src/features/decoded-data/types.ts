@@ -1,5 +1,6 @@
 export interface IDecodedRecord {
   device_id: string;
+  device_name: string;
   timestamp: string;
   t1_celsius: number | null;
   t2_celsius: number | null;

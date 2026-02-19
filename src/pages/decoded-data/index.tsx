@@ -260,7 +260,7 @@ export default function DecodedDataPage() {
                   }
                 >
                   <TableCell className="font-mono text-xs font-medium">
-                    {record.device_id}
+                    {record.device_name}
                   </TableCell>
                   <TableCell className="text-sm whitespace-nowrap">
                     {formatTimestamp(record.timestamp)}

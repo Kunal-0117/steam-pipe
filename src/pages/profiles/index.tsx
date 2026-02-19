@@ -24,6 +24,7 @@ import {
   useGetDeviceProfilesQuery,
   useGetServiceProfilesQuery,
 } from "@/features/profiles/hooks";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
 import { Cpu, Globe, Layers, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { DeviceProfileForm } from "./device-profile-form";
@@ -48,6 +49,7 @@ export default function ProfilesPage() {
 
   const deleteDPMutation = useDeleteDeviceProfileMutation();
   const deleteSPMutation = useDeleteServiceProfileMutation();
+  const deleteConfirm = useDeleteConfirm();
 
   const openCreateModal = () => {
     setIsModalOpen(true);
@@ -162,13 +164,9 @@ export default function ProfilesPage() {
                             variant="ghost"
                             size="icon-sm"
                             onClick={() => {
-                              if (
-                                window.confirm(
-                                  "Are you sure you want to delete this device profile?",
-                                )
-                              ) {
-                                deleteDPMutation.mutate(p.Id);
-                              }
+                              deleteConfirm({
+                                onConfirm: () => deleteDPMutation.mutateAsync(p.Id),
+                              });
                             }}
                             disabled={deleteDPMutation.isPending}
                             title="Delete Profile"
@@ -230,13 +228,10 @@ export default function ProfilesPage() {
                           variant="ghost"
                           size="icon-sm"
                           onClick={() => {
-                            if (
-                              window.confirm(
-                                "Are you sure you want to delete this service profile?",
-                              )
-                            ) {
-                              deleteSPMutation.mutate(p.Id);
-                            }
+                            deleteConfirm({
+                              onConfirm: () =>
+                                deleteSPMutation.mutateAsync(p.Id),
+                            });
                           }}
                           disabled={deleteSPMutation.isPending}
                           title="Delete Profile"

@@ -7,11 +7,13 @@ import {
 
 import ProtectedRoute from "@/components/protected-page";
 import { RouterTweaks } from "@/components/router-tweaks";
+import { ConfirmDialogProvider } from "@/components/ui/confirm-dialog";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/auth-provider";
 import QueryProvider from "@/contexts/query-provider";
 import { ThemeProvider } from "@/contexts/theme-provider";
+import AppLayout from "@/layouts/app";
 import Dashboard from "@/pages/dashboard";
 import DecodedData from "@/pages/decoded-data";
 import Destinations from "@/pages/destinations";
@@ -26,7 +28,6 @@ import Rules from "@/pages/rules";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useLayoutEffect } from "react";
-import AppLayout from "./layouts/app";
 
 function App() {
   useLayoutEffect(() => {
@@ -46,7 +47,9 @@ function App() {
         <QueryProvider>
           <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
             <TooltipProvider>
-              <AllRoutes />
+              <ConfirmDialogProvider>
+                <AllRoutes />
+              </ConfirmDialogProvider>
               <Toaster richColors />
             </TooltipProvider>
           </ThemeProvider>

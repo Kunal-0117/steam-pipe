@@ -9,21 +9,29 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useDeletePIDMutation, useGetPIDsQuery } from "@/features/pid/hooks";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Calendar, Edit, Map, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function PIDListPage() {
   const navigate = useNavigate();
-  const { data: pids = [], isLoading, isError } = useGetPIDsQuery();
+  const { data: pids = [], isLoading, isError, refetch } = useGetPIDsQuery();
   const deleteMutation = useDeletePIDMutation();
 
   const handleEdit = (id: string) => {
     navigate(`/pid/edit/${id}`);
   };
 
+  const deleteConfirm = useDeleteConfirm();
+
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
+    deleteConfirm({
+      onConfirm: () => {
+        return deleteMutation.mutateAsync(id);
+      },
+      onSuccess: refetch,
+    });
   };
 
   if (isLoading) {
@@ -107,13 +115,7 @@ export default function PIDListPage() {
                   size="sm"
                   className="text-destructive hover:bg-destructive/10"
                   onClick={() => {
-                    if (
-                      window.confirm(
-                        `Are you sure you want to delete "${pid.name}"?`,
-                      )
-                    ) {
-                      handleDelete(pid.id);
-                    }
+                    handleDelete(pid.id);
                   }}
                 >
                   <Trash2 className="h-3.5 w-3.5" />

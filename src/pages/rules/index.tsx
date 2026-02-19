@@ -21,6 +21,7 @@ import {
   useGetRulesQuery,
 } from "@/features/rules/hooks";
 import type { IRule } from "@/features/rules/types";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
 import { format, parseISO } from "date-fns";
 import { Calendar, FileText, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -32,6 +33,7 @@ export default function RulesPage() {
 
   const { data: rules = [], isLoading, isError, refetch } = useGetRulesQuery();
   const deleteMutation = useDeleteRuleMutation();
+  const deleteConfirm = useDeleteConfirm();
 
   const openCreateModal = () => {
     setEditingRule(null);
@@ -136,13 +138,10 @@ export default function RulesPage() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => {
-                          if (
-                            window.confirm(
-                              `Are you sure you want to delete rule "${rule.ruleName}"?`,
-                            )
-                          ) {
-                            deleteMutation.mutate(rule.ruleName);
-                          }
+                          deleteConfirm({
+                            onConfirm: () =>
+                              deleteMutation.mutateAsync(rule.ruleName),
+                          });
                         }}
                         disabled={deleteMutation.isPending}
                         title="Delete Rule"

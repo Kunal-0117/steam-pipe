@@ -27,6 +27,7 @@ import {
   useGetDevicesQuery,
 } from "@/features/devices/hooks";
 import type { IDevice, IDeviceFilters } from "@/features/devices/types";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Circle, Pencil, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -97,6 +98,17 @@ export default function DevicesPage() {
     } catch {
       return timestamp;
     }
+  };
+
+  const deleteConfirm = useDeleteConfirm();
+
+  const handleDelete = async (id: string) => {
+    deleteConfirm({
+      onConfirm: () => {
+        return deleteMutation.mutateAsync(id);
+      },
+      onSuccess: refetch,
+    });
   };
 
   return (
@@ -285,13 +297,7 @@ export default function DevicesPage() {
                         size="icon"
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         onClick={() => {
-                          if (
-                            window.confirm(
-                              "Are you sure you want to delete this device?",
-                            )
-                          ) {
-                            deleteMutation.mutate(dev.Id);
-                          }
+                          handleDelete(dev.Id);
                         }}
                       >
                         <Trash2 className="h-4 w-4" />

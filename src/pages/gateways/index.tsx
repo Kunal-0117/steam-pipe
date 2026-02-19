@@ -22,6 +22,7 @@ import {
   useGetGatewaysQuery,
 } from "@/features/gateways/hooks";
 import type { IGateway } from "@/features/gateways/types";
+import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
 import { differenceInHours, format, parseISO } from "date-fns";
 import { Download, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -40,6 +41,7 @@ export default function GatewaysPage() {
 
   const deleteMutation = useDeleteGatewayMutation();
   const downloadMutation = useDownloadGatewayConfigMutation();
+  const deleteConfirm = useDeleteConfirm();
 
   const openCreateModal = () => {
     setEditingGateway(null);
@@ -151,13 +153,9 @@ export default function GatewaysPage() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => {
-                          if (
-                            window.confirm(
-                              "Are you sure you want to delete this gateway?",
-                            )
-                          ) {
-                            deleteMutation.mutate(gw.Id);
-                          }
+                          deleteConfirm({
+                            onConfirm: () => deleteMutation.mutateAsync(gw.Id),
+                          });
                         }}
                         disabled={deleteMutation.isPending}
                         title="Delete Gateway"
