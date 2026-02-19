@@ -165,7 +165,8 @@ export default function ProfilesPage() {
                             size="icon-sm"
                             onClick={() => {
                               deleteConfirm({
-                                onConfirm: () => deleteDPMutation.mutateAsync(p.Id),
+                                onConfirm: () =>
+                                  deleteDPMutation.mutateAsync(p.Id),
                               });
                             }}
                             disabled={deleteDPMutation.isPending}
