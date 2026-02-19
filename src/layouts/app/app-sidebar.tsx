@@ -6,6 +6,7 @@ import {
   IconHelp,
   IconHistory,
   IconInnerShadowTop,
+  IconMap,
   IconRouter,
   IconSettings,
   IconShieldCheck,
@@ -69,6 +70,11 @@ const data = {
       title: "Rules",
       url: "/rules",
       icon: IconShieldCheck,
+    },
+    {
+      title: "P&ID",
+      url: "/pid",
+      icon: IconMap,
     },
   ],
   navSecondary: [

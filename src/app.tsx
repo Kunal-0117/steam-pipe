@@ -19,6 +19,8 @@ import Devices from "@/pages/devices";
 import Gateways from "@/pages/gateways";
 import LoginPage from "@/pages/login";
 import NotFoundPage from "@/pages/not-found";
+import PIDListPage from "@/pages/pid";
+import PIDFormPage from "@/pages/pid/form";
 import Profiles from "@/pages/profiles";
 import Rules from "@/pages/rules";
 import AOS from "aos";
@@ -73,6 +75,9 @@ function AllRoutes() {
         <Route path="destinations" element={<Destinations />} />
         <Route path="decoded-data" element={<DecodedData />} />
         <Route path="rules" element={<Rules />} />
+        <Route path="pid" element={<PIDListPage />} />
+        <Route path="pid/new" element={<PIDFormPage />} />
+        <Route path="pid/edit/:id" element={<PIDFormPage />} />
       </Route>
       <Route
         path="/auth"
