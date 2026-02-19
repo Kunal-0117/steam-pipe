@@ -5,7 +5,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useGetDevicesQuery } from "@/features/devices/hooks";
 import { useGetPIDQuery } from "@/features/pid/hooks";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, MapPin, Maximize2, Minimize2 } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  MapPin,
+  Maximize2,
+  Minimize2,
+  XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -31,16 +38,22 @@ export default function PIDViewPage() {
     setIsFullscreen(!isFullscreen);
   };
 
+  const pidDevices = pid.devices
+    .map((d) => devicesData?.items.find((item) => item.Id === d.deviceId))
+    .filter(Boolean);
+  const onlineCount = pidDevices.filter((d) => d?.isOnline).length;
+  const totalCount = pid.devices.length;
+
   return (
     <div
       className={cn(
-        "flex flex-col gap-6 p-6 transition-all duration-300",
+        "flex flex-col gap-6 p-6 transition-all duration-300 h-full",
         isFullscreen && "fixed inset-0 z-50 bg-background p-0 overflow-auto",
       )}
     >
       <div
         className={cn(
-          "flex items-center justify-between gap-4 px-6 pt-6",
+          "flex items-center justify-between gap-4 px-6 pt-6 shrink-0",
           !isFullscreen && "px-0 pt-0",
         )}
       >
@@ -52,15 +65,35 @@ export default function PIDViewPage() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold">{pid.name}</h1>
+          <div>
+            <h1 className="text-2xl font-bold">{pid.name}</h1>
+            {!isFullscreen && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Monitoring {totalCount} devices in this diagram
+              </p>
+            )}
+          </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
-          {isFullscreen ? (
-            <Minimize2 className="h-5 w-5" />
-          ) : (
-            <Maximize2 className="h-5 w-5" />
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 mr-4 text-xs font-medium border rounded-full px-3 py-1 bg-card">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-3 w-3 text-success" />
+              <span>{onlineCount} Online</span>
+            </div>
+            <div className="w-px h-3 bg-border mx-1" />
+            <div className="flex items-center gap-1.5">
+              <XCircle className="h-3 w-3 text-destructive" />
+              <span>{totalCount - onlineCount} Offline</span>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
+            {isFullscreen ? (
+              <Minimize2 className="h-5 w-5" />
+            ) : (
+              <Maximize2 className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
       </div>
 
       <div className={cn("flex-1", isFullscreen ? "px-6 pb-6" : "")}>
@@ -111,7 +144,7 @@ export default function PIDViewPage() {
                         <span>{sd.deviceName}</span>
                         <span
                           className={cn(
-                            "text-[10px]",
+                            "text-xs",
                             isOnline
                               ? "text-green-500"
                               : "text-red-500 uppercase",

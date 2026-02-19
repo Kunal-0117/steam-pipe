@@ -1,5 +1,6 @@
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -207,24 +208,31 @@ export default function PIDFormPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Placed Devices</Label>
-              <div className="max-h-60 overflow-y-auto border rounded-md p-2">
+              <div className="flex items-center justify-between">
+                <Label>Placed Devices</Label>
+                <Badge variant="flat" className="text-xs px-1.5 h-4">
+                  {selectedDevices.length}
+                </Badge>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto border rounded-md p-1 bg-muted/20">
                 {selectedDevices.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">
+                  <p className="text-sm text-muted-foreground text-center py-6 italic">
                     No devices placed yet
                   </p>
                 ) : (
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-0.5">
                     {selectedDevices.map((sd) => (
                       <div
                         key={sd.deviceId}
-                        className="flex items-center justify-between p-2 rounded-sm bg-accent/50 text-sm"
+                        className="flex items-center justify-between px-2 py-1 rounded hover:bg-accent transition-colors text-xs group/item"
                       >
-                        <span className="truncate flex-1">{sd.deviceName}</span>
+                        <span className="truncate flex-1 font-medium">
+                          {sd.deviceName}
+                        </span>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-destructive"
+                          className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover/item:opacity-100 transition-opacity"
                           onClick={() => removeDevice(sd.deviceId)}
                         >
                           <Trash2 className="h-3 w-3" />
@@ -295,7 +303,7 @@ export default function PIDFormPage() {
                         <MapPin className="h-4 w-4 relative z-10" />
                       </div>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 hidden group-hover:block z-10">
-                        <div className="bg-popover text-popover-foreground text-[10px] px-1.5 py-0.5 rounded border whitespace-nowrap shadow-sm flex flex-col items-center">
+                        <div className="bg-popover text-popover-foreground text-xs px-1.5 py-0.5 rounded border whitespace-nowrap shadow-sm flex flex-col items-center">
                           <span>{sd.deviceName}</span>
                           {isOnline !== undefined && (
                             <span

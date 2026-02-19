@@ -1,22 +1,34 @@
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { useGetDevicesQuery } from "@/features/devices/hooks";
 import { useDeletePIDMutation, useGetPIDsQuery } from "@/features/pid/hooks";
 import { useDeleteConfirm } from "@/hooks/use-delete-confirm";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { Calendar, Edit, Map, Plus, Trash2 } from "lucide-react";
+import {
+  Calendar,
+  Circle,
+  Edit,
+  ExternalLink,
+  Map,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function PIDListPage() {
   const navigate = useNavigate();
-  const { data: pids = [], isLoading, isError, refetch } = useGetPIDsQuery();
+  const {
+    data: pids = [],
+    isLoading: isPIDsLoading,
+    isError,
+    refetch,
+  } = useGetPIDsQuery();
+  const { data: devicesData, isLoading: isDevicesLoading } = useGetDevicesQuery(
+    { maxResults: 1000 },
+  );
   const deleteMutation = useDeletePIDMutation();
 
   const handleEdit = (id: string) => {
@@ -37,6 +49,8 @@ export default function PIDListPage() {
       onSuccess: refetch,
     });
   };
+
+  const isLoading = isPIDsLoading || isDevicesLoading;
 
   if (isLoading) {
     return <LoadingState />;
@@ -81,60 +95,121 @@ export default function PIDListPage() {
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pids.map((pid) => (
-            <Card key={pid.id} className="overflow-hidden flex flex-col p-0">
-              <div className="aspect-video relative bg-muted overflow-hidden">
-                <img
-                  src={pid.imageUrl}
-                  alt={pid.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-md text-[10px] font-medium border">
-                  {pid.devices.length} Devices
-                </div>
-              </div>
-              <CardHeader className="p-4">
-                <CardTitle className="text-lg truncate">{pid.name}</CardTitle>
-                <CardDescription className="flex items-center gap-1 text-xs">
-                  <Calendar className="h-3 w-3" />
-                  {formatDistanceToNow(parseISO(pid.createdAt), {
-                    addSuffix: true,
-                  })}
-                </CardDescription>
-              </CardHeader>
-              <CardFooter className="p-4 pt-0 mt-auto flex justify-between gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 gap-2"
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          {pids.map((pid) => {
+            const pidDevices = pid.devices
+              .map((d) =>
+                devicesData?.items.find((item) => item.Id === d.deviceId),
+              )
+              .filter(Boolean);
+            const onlineCount = pidDevices.filter((d) => d?.isOnline).length;
+            const totalCount = pid.devices.length;
+            const healthPercentage =
+              totalCount > 0 ? (onlineCount / totalCount) * 100 : 0;
+
+            return (
+              <Card
+                key={pid.id}
+                className="group overflow-hidden flex flex-row p-0 transition-all hover:border-primary/50"
+              >
+                <div
+                  className="w-32 sm:w-48 shrink-0 relative bg-muted border-r overflow-hidden cursor-pointer"
                   onClick={() => handleView(pid.id)}
                 >
-                  <Map className="h-3.5 w-3.5" />
-                  View
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-2"
-                  onClick={() => handleEdit(pid.id)}
-                >
-                  <Edit className="h-3.5 w-3.5" />
-                </Button>
+                  <img
+                    src={pid.imageUrl}
+                    alt={pid.name}
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <ExternalLink className="text-white h-6 w-6" />
+                  </div>
+                </div>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-destructive hover:bg-destructive/10 px-2"
-                  onClick={() => {
-                    handleDelete(pid.id);
-                  }}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                <div className="flex-1 flex flex-col p-4 min-w-0">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <CardTitle
+                        className="text-base sm:text-lg truncate cursor-pointer hover:text-primary transition-colors"
+                        onClick={() => handleView(pid.id)}
+                      >
+                        {pid.name}
+                      </CardTitle>
+                      <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+                        <Calendar className="h-3 w-3 shrink-0" />
+                        <span>
+                          Updated{" "}
+                          {formatDistanceToNow(parseISO(pid.updatedAt), {
+                            addSuffix: true,
+                          })}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleEdit(pid.id)}
+                        title="Edit Configuration"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDelete(pid.id)}
+                        title="Delete Diagram"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="mt-auto pt-4 flex flex-col gap-3">
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5">
+                          <Circle className="h-2 w-2 fill-success text-success" />
+                          <span className="font-medium">
+                            {onlineCount} Online
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 grayscale opacity-60">
+                          <Circle className="h-2 w-2 fill-muted-foreground text-muted-foreground" />
+                          <span>{totalCount - onlineCount} Offline</span>
+                        </div>
+                      </div>
+                      <Badge
+                        variant="flat"
+                        colorVariant={
+                          healthPercentage === 100
+                            ? "success"
+                            : healthPercentage > 50
+                              ? "warning"
+                              : "destructive"
+                        }
+                        className="px-1.5 py-0"
+                      >
+                        {totalCount > 0
+                          ? `${Math.round(healthPercentage)}% Active`
+                          : "No Devices"}
+                      </Badge>
+                    </div>
+
+                    <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-success transition-all duration-500"
+                        style={{ width: `${healthPercentage}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

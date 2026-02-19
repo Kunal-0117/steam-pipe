@@ -101,7 +101,7 @@ export default function RulesPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <code className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono">
+                    <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">
                       {rule.topicPattern || "N/A"}
                     </code>
                   </TableCell>

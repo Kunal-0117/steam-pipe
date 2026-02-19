@@ -212,7 +212,7 @@ export default function DashboardPage() {
                       colorVariant={
                         item.leak_detected ? "destructive" : "success"
                       }
-                      className="text-[10px]"
+                      className="text-xs"
                     >
                       {item.leak_detected ? "Leak" : "Normal"}
                     </Badge>
