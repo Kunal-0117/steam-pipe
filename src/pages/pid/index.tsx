@@ -23,6 +23,10 @@ export default function PIDListPage() {
     navigate(`/pid/edit/${id}`);
   };
 
+  const handleView = (id: string) => {
+    navigate(`/pid/view/${id}`);
+  };
+
   const deleteConfirm = useDeleteConfirm();
 
   const handleDelete = (id: string) => {
@@ -104,16 +108,24 @@ export default function PIDListPage() {
                   variant="outline"
                   size="sm"
                   className="flex-1 gap-2"
+                  onClick={() => handleView(pid.id)}
+                >
+                  <Map className="h-3.5 w-3.5" />
+                  View
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="px-2"
                   onClick={() => handleEdit(pid.id)}
                 >
                   <Edit className="h-3.5 w-3.5" />
-                  Edit
                 </Button>
 
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-destructive hover:bg-destructive/10"
+                  className="text-destructive hover:bg-destructive/10 px-2"
                   onClick={() => {
                     handleDelete(pid.id);
                   }}

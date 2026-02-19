@@ -23,6 +23,7 @@ import LoginPage from "@/pages/login";
 import NotFoundPage from "@/pages/not-found";
 import PIDListPage from "@/pages/pid";
 import PIDFormPage from "@/pages/pid/form";
+import PIDViewPage from "@/pages/pid/view";
 import Profiles from "@/pages/profiles";
 import Rules from "@/pages/rules";
 import AOS from "aos";
@@ -81,6 +82,7 @@ function AllRoutes() {
         <Route path="pid" element={<PIDListPage />} />
         <Route path="pid/new" element={<PIDFormPage />} />
         <Route path="pid/edit/:id" element={<PIDFormPage />} />
+        <Route path="pid/view/:id" element={<PIDViewPage />} />
       </Route>
       <Route
         path="/auth"

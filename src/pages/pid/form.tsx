@@ -18,6 +18,7 @@ import {
   useUpdatePIDMutation,
 } from "@/features/pid/hooks";
 import type { IPIDDevice, IPIDFormValues } from "@/features/pid/types";
+import { cn } from "@/lib/utils";
 import { ArrowLeft, MapPin, Trash2, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -261,22 +262,56 @@ export default function PIDFormPage() {
                   alt="P&ID Preview"
                   className="w-full h-auto block"
                 />
-                {selectedDevices.map((sd) => (
-                  <div
-                    key={sd.deviceId}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 group"
-                    style={{ left: `${sd.x}%`, top: `${sd.y}%` }}
-                  >
-                    <div className="bg-primary text-primary-foreground rounded-full p-1.5 shadow-lg border-2 border-background animate-in zoom-in-50 duration-200">
-                      <MapPin className="h-4 w-4" />
-                    </div>
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 hidden group-hover:block z-10">
-                      <div className="bg-popover text-popover-foreground text-[10px] px-1.5 py-0.5 rounded border whitespace-nowrap shadow-sm">
-                        {sd.deviceName}
+                {selectedDevices.map((sd) => {
+                  const device = devicesData?.items.find(
+                    (d) => d.Id === sd.deviceId,
+                  );
+                  const isOnline = device?.isOnline;
+
+                  return (
+                    <div
+                      key={sd.deviceId}
+                      className="absolute -translate-x-1/2 -translate-y-1/2 group"
+                      style={{ left: `${sd.x}%`, top: `${sd.y}%` }}
+                    >
+                      <div
+                        className={cn(
+                          "rounded-full p-1.5 shadow-lg border-2 border-background animate-in zoom-in-50 duration-200 relative transition-colors",
+                          isOnline
+                            ? "bg-success text-success-foreground"
+                            : isOnline === false
+                              ? "bg-destructive text-destructive-foreground"
+                              : "bg-primary text-primary-foreground",
+                        )}
+                      >
+                        {isOnline !== undefined && (
+                          <div
+                            className={cn(
+                              "absolute inset-0 rounded-full animate-ping opacity-75",
+                              isOnline ? "bg-success" : "bg-destructive",
+                            )}
+                          />
+                        )}
+                        <MapPin className="h-4 w-4 relative z-10" />
+                      </div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 hidden group-hover:block z-10">
+                        <div className="bg-popover text-popover-foreground text-[10px] px-1.5 py-0.5 rounded border whitespace-nowrap shadow-sm flex flex-col items-center">
+                          <span>{sd.deviceName}</span>
+                          {isOnline !== undefined && (
+                            <span
+                              className={cn(
+                                "text-[8px] uppercase font-bold",
+                                isOnline ? "text-green-500" : "text-red-500",
+                              )}
+                            >
+                              {isOnline ? "Online" : "Offline"}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {currentDeviceId && (
                   <div className="absolute inset-0 flex items-center justify-center bg-primary/5 pointer-events-none border-2 border-primary border-dashed">
                     <p className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium shadow-xl">
