@@ -139,9 +139,9 @@ export default function PIDListPage() {
                         <Calendar className="h-3 w-3 shrink-0" />
                         <span>
                           Updated{" "}
-                          {formatDistanceToNow(parseISO(pid.updatedAt), {
-                            addSuffix: true,
-                          })}
+                          {pid.updatedAt
+                            ? formatDistanceToNow(parseISO(pid.updatedAt), { addSuffix: true })
+                            : "recently"}
                         </span>
                       </div>
                     </div>

@@ -34,6 +34,7 @@ async function uploadImageToS3(file: File): Promise<string> {
       filename: file.name,
       content_type: file.type,
       expires_in: 300,
+      folder: "pids"
     }
   );
 
