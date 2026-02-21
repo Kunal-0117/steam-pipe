@@ -1,25 +1,14 @@
+import { makeRequest } from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { IPID, IPIDFormValues } from "./types";
-
-const PID_STORAGE_KEY = "steam-pipe-pids";
-
-const getPIDs = (): IPID[] => {
-  const data = localStorage.getItem(PID_STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
-};
-
-const savePIDs = (pids: IPID[]) => {
-  localStorage.setItem(PID_STORAGE_KEY, JSON.stringify(pids));
-};
 
 export function useGetPIDsQuery() {
   return useQuery({
     queryKey: ["pids"],
     queryFn: async () => {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return getPIDs();
+      const res = await makeRequest.get<IPID[]>("/v1/data/pids");
+      return res.data;
     },
   });
 }
@@ -29,42 +18,57 @@ export function useGetPIDQuery(id?: string) {
     queryKey: ["pids", id],
     queryFn: async () => {
       if (!id) return null;
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const pids = getPIDs();
-      return pids.find((p) => p.id === id) || null;
+      const res = await makeRequest.get<IPID>(`/v1/data/pids/${id}`);
+      return res.data;
     },
     enabled: !!id,
   });
+}
+
+/** Helper to upload image to S3 using backend presigned URL */
+async function uploadImageToS3(file: File): Promise<string> {
+  // 1. Get presigned URL
+  const { data: presignedData } = await makeRequest.post(
+    "/v1/storage/upload-url",
+    {
+      filename: file.name,
+      content_type: file.type,
+      expires_in: 300,
+    }
+  );
+
+  // 2. Upload directly to S3
+  await fetch(presignedData.upload_url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": file.type,
+    },
+    body: file,
+  });
+
+  // 3. Return the stored key/url
+  // Since we don't have a public bucket URL mapped in the response, we might need a download URL later
+  // but for now we store the file_key or just use the upload url baseline if public
+  return presignedData.file_key;
 }
 
 export function useCreatePIDMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (values: IPIDFormValues) => {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      const pids = getPIDs();
-
       let imageUrl = "";
       if (values.image instanceof File) {
-        // Mock image upload by converting to base64
-        imageUrl = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(values.image as File);
-        });
+        imageUrl = await uploadImageToS3(values.image);
       }
 
-      const newPID: IPID = {
-        id: crypto.randomUUID(),
+      const payload = {
         name: values.name,
         imageUrl: imageUrl,
         devices: values.devices,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
 
-      savePIDs([newPID, ...pids]);
-      return newPID;
+      const res = await makeRequest.post("/v1/data/pids", payload);
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pids"] });
@@ -79,40 +83,33 @@ export function useUpdatePIDMutation() {
     mutationFn: async ({
       id,
       values,
+      currentImageUrl,
     }: {
       id: string;
       values: IPIDFormValues;
+      currentImageUrl?: string;
     }) => {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      const pids = getPIDs();
-      const index = pids.findIndex((p) => p.id === id);
-
-      if (index === -1) throw new Error("P&ID not found");
-
-      let imageUrl = pids[index].imageUrl;
+      let imageUrl = currentImageUrl || "";
       if (values.image instanceof File) {
-        imageUrl = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(values.image as File);
-        });
+        imageUrl = await uploadImageToS3(values.image);
+      } else if (typeof values.image === "string") {
+        imageUrl = values.image;
       }
 
-      const updatedPID: IPID = {
-        ...pids[index],
+      const payload = {
         name: values.name,
         imageUrl: imageUrl,
         devices: values.devices,
-        updatedAt: new Date().toISOString(),
       };
 
-      pids[index] = updatedPID;
-      savePIDs(pids);
-      return updatedPID;
+      const res = await makeRequest.put(`/v1/data/pids/${id}`, payload);
+      return res.data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["pids"] });
-      queryClient.invalidateQueries({ queryKey: ["pids", data.id] });
+      if (data && data.id) {
+        queryClient.invalidateQueries({ queryKey: ["pids", data.id] });
+      }
       toast.success("P&ID updated successfully");
     },
   });
@@ -122,11 +119,8 @@ export function useDeletePIDMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const pids = getPIDs();
-      const filteredPids = pids.filter((p) => p.id !== id);
-      savePIDs(filteredPids);
-      return id;
+      const res = await makeRequest.delete(`/v1/data/pids/${id}`);
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pids"] });
@@ -134,3 +128,4 @@ export function useDeletePIDMutation() {
     },
   });
 }
+

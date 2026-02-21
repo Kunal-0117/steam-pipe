@@ -32,11 +32,6 @@ export default function DashboardPage() {
   const { data: recentData } = useGetDecodedDataQuery({ limit: 10 });
 
   const devices = devicesData?.items || [];
-  const activeGateways = gateways.filter((gw) => {
-    // Simple mock logic for dashboard if real status isn't easily accessible here
-    // In production we'd use the same logic as gateways page
-    return true;
-  }).length;
 
   const stats = [
     {

@@ -7,7 +7,7 @@ export function useGetGatewaysQuery() {
   return useQuery({
     queryKey: ["gateways"],
     queryFn: async () => {
-      const res = await makeRequest.get<IGateway[]>("/gateways");
+      const res = await makeRequest.get<IGateway[]>("/v1/iot/gateways");
       return res.data;
     },
   });
@@ -17,7 +17,7 @@ export function useCreateGatewayMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: IGatewayFormValues) => {
-      const res = await makeRequest.post("/gateways", data);
+      const res = await makeRequest.post("/v1/iot/gateways", data);
       return res.data;
     },
     onSuccess: () => {
@@ -40,7 +40,7 @@ export function useUpdateGatewayMutation() {
       id: string;
       data: Pick<IGatewayFormValues, "Name" | "Description">;
     }) => {
-      const res = await makeRequest.put(`/gateways/${id}`, data);
+      const res = await makeRequest.put(`/v1/iot/gateways/${id}`, data);
       return res.data;
     },
     onSuccess: () => {
@@ -57,7 +57,7 @@ export function useDeleteGatewayMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await makeRequest.delete(`/gateways/${id}`);
+      const res = await makeRequest.delete(`/v1/iot/gateways/${id}`);
       return res.data;
     },
     onSuccess: () => {
@@ -73,7 +73,7 @@ export function useDeleteGatewayMutation() {
 export function useDownloadGatewayConfigMutation() {
   return useMutation({
     mutationFn: async (id: string) => {
-      const response = await makeRequest.get(`/gateways/${id}/configuration`, {
+      const response = await makeRequest.get(`/v1/iot/gateways/${id}/configuration`, {
         responseType: "blob",
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));

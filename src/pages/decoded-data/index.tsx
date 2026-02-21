@@ -70,7 +70,7 @@ export default function DecodedDataPage() {
       filters.status_filter === "all" ? undefined : filters.status_filter,
   };
 
-  const { data, isLoading, isError, refetch } =
+  const { data, isLoading, refetch } =
     useGetDecodedDataQuery(activeFilters);
 
   const items = data?.items || [];

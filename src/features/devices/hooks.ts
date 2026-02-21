@@ -12,13 +12,14 @@ export function useGetDevicesQuery(filters: IDeviceFilters = {}) {
   return useQuery({
     queryKey: ["devices", filters],
     queryFn: async () => {
-      const res = await makeRequest.get<IDeviceListResponse>(
-        "/wireless-devices",
-        {
-          params: filters,
-        },
+      const res = await makeRequest.get(
+        "/v1/iot/wireless-devices",
+        { params: filters },
       );
-      return res.data;
+      return {
+        items: res.data,
+        totalCount: res.data.length,
+      } as IDeviceListResponse;
     },
   });
 }
@@ -46,7 +47,7 @@ export function useCreateDeviceMutation() {
           { Key: "LocationId", Value: values.locationId },
         ],
       };
-      const res = await makeRequest.post("/wireless-devices", payload);
+      const res = await makeRequest.post("/v1/iot/wireless-devices", payload);
       return res.data;
     },
     onSuccess: () => {
@@ -84,7 +85,7 @@ export function useUpdateDeviceMutation() {
           },
         },
       };
-      const res = await makeRequest.put(`/wireless-devices/${id}`, payload);
+      const res = await makeRequest.put(`/v1/iot/wireless-devices/${id}`, payload);
       return res.data;
     },
     onSuccess: () => {
@@ -101,7 +102,7 @@ export function useDeleteDeviceMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await makeRequest.delete(`/wireless-devices/${id}`);
+      const res = await makeRequest.delete(`/v1/iot/wireless-devices/${id}`);
       return res.data;
     },
     onSuccess: () => {
@@ -114,24 +115,24 @@ export function useDeleteDeviceMutation() {
   });
 }
 
+/** Generates a new DevEUI, AppEUI, AppKey set */
 export function useGenerateKeysQuery() {
   return useQuery({
     queryKey: ["utils", "generate-keys"],
     queryFn: async () => {
-      const res = await makeRequest.get<IProvisionResponse>(
-        "/utils/generate-keys",
-      );
+      const res = await makeRequest.post<IProvisionResponse>("/v1/utils/keys", {});
       return res.data;
     },
     enabled: false, // Manual trigger only via refetch
   });
 }
 
+/** Generates a unique GUID */
 export function useGenerateGuidQuery() {
   return useQuery({
     queryKey: ["utils", "generate-guid"],
     queryFn: async () => {
-      const res = await makeRequest.get<string>("/utils/generate-guid");
+      const res = await makeRequest.post<string>("/v1/utils/guid", {});
       return res.data;
     },
     enabled: false, // Manual trigger only

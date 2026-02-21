@@ -4,12 +4,21 @@ const API_BASE_URL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
 
 export const makeRequest = axios.create({
   baseURL: API_BASE_URL,
-  // withCredentials: true,
   paramsSerializer: {
     indexes: null,
   },
 });
 
+// ─── Request interceptor — inject Cognito IdToken ──────────────────────────
+makeRequest.interceptors.request.use((config) => {
+  const token = localStorage.getItem("id_token");
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// ─── Response interceptor — normalize error messages ──────────────────────
 makeRequest.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -17,7 +26,7 @@ makeRequest.interceptors.response.use(
       "Oops! Something went wrong. Please try again later.";
     error.message = defaultErrorMessage;
 
-    if (error.response?.data?.message || error.response?.data.detail) {
+    if (error.response?.data?.message || error.response?.data?.detail) {
       const message = error.response.data.message || error.response.data.detail;
       error.message = message;
     } else if (error.response) {
@@ -28,8 +37,12 @@ makeRequest.interceptors.response.use(
           break;
 
         case 401:
+          // Clear stale token and redirect to login
+          localStorage.removeItem("id_token");
+          localStorage.removeItem("auth_user");
+          window.location.href = "/auth/login";
           error.message =
-            "You need to log in to access this resource. Please log in and try again.";
+            "Your session has expired. Please log in again.";
           break;
 
         case 403:

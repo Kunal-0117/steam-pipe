@@ -7,33 +7,70 @@ import { Loader2 } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 
+const COGNITO_REGION = import.meta.env.VITE_COGNITO_REGION;
+const COGNITO_CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID;
+
+async function cognitoLogin(email: string, password: string) {
+  const response = await fetch(
+    `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-amz-json-1.1",
+        "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
+      },
+      body: JSON.stringify({
+        AuthFlow: "USER_PASSWORD_AUTH",
+        ClientId: COGNITO_CLIENT_ID,
+        AuthParameters: {
+          USERNAME: email,
+          PASSWORD: password,
+        },
+      }),
+    },
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Authentication failed");
+  }
+
+  return data.AuthenticationResult;
+}
+
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const [loading, setLoading] = React.useState(false);
   const { setUser } = useAuth();
-  function onSubmit(e: React.FormEvent) {
+
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
-    const email = formData.get("email");
-    const password = formData.get("password");
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
     if (!email || !password) {
       toast.error("Please fill in all fields");
       return;
     }
+
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const authResult = await cognitoLogin(email, password);
+      // Store the IdToken for API requests
+      localStorage.setItem("id_token", authResult.IdToken);
+      toast.success("Logged in successfully!");
+      setUser({ email });
+    } catch (err: any) {
+      toast.error(err.message || "Invalid credentials");
+    } finally {
       setLoading(false);
-      if (email !== "admin@admin.com" || password !== "admin") {
-        toast.error("Invalid credentials!");
-        return;
-      } else {
-        toast.success("Logged in successfully!");
-        setUser({ email });
-      }
-    }, 2000);
+    }
   }
+
   return (
     <form
       onSubmit={onSubmit}

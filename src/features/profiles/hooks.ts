@@ -12,7 +12,7 @@ export function useGetDeviceProfilesQuery() {
   return useQuery({
     queryKey: ["profiles", "device-profiles"],
     queryFn: async () => {
-      const res = await makeRequest.get<IDeviceProfile[]>("/device-profiles");
+      const res = await makeRequest.get<IDeviceProfile[]>("/v1/iot/device-profiles");
       return res.data;
     },
   });
@@ -22,7 +22,7 @@ export function useCreateDeviceProfileMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: IDeviceProfileFormValues) => {
-      const res = await makeRequest.post("/device-profiles", data);
+      const res = await makeRequest.post("/v1/iot/device-profiles", data);
       return res.data;
     },
     onSuccess: () => {
@@ -41,7 +41,7 @@ export function useDeleteDeviceProfileMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await makeRequest.delete(`/device-profiles/${id}`);
+      const res = await makeRequest.delete(`/v1/iot/device-profiles/${id}`);
       return res.data;
     },
     onSuccess: () => {
@@ -60,7 +60,7 @@ export function useGetServiceProfilesQuery() {
   return useQuery({
     queryKey: ["profiles", "service-profiles"],
     queryFn: async () => {
-      const res = await makeRequest.get<IServiceProfile[]>("/service-profiles");
+      const res = await makeRequest.get<IServiceProfile[]>("/v1/iot/service-profiles");
       return res.data;
     },
   });
@@ -70,7 +70,7 @@ export function useCreateServiceProfileMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: IServiceProfileFormValues) => {
-      const res = await makeRequest.post("/service-profiles", data);
+      const res = await makeRequest.post("/v1/iot/service-profiles", data);
       return res.data;
     },
     onSuccess: () => {
@@ -89,7 +89,7 @@ export function useDeleteServiceProfileMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await makeRequest.delete(`/service-profiles/${id}`);
+      const res = await makeRequest.delete(`/v1/iot/service-profiles/${id}`);
       return res.data;
     },
     onSuccess: () => {

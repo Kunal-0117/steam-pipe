@@ -51,7 +51,7 @@ export function GatewayForm(props: GatewayFormProps) {
     }
   };
 
-  const handleGenerateGuid = async (field: keyof IGatewayFormValues) => {
+  const handleGenerateGuid = async (_field: keyof IGatewayFormValues) => {
     try {
       //   const guid = await apiClient.generateGuid();
       //   setValue(field, guid);

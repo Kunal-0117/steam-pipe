@@ -113,7 +113,11 @@ export default function PIDFormPage() {
 
     try {
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: id as string, values });
+        await updateMutation.mutateAsync({
+          id: id as string,
+          values,
+          currentImageUrl: typeof existingPID?.imageUrl === "string" ? existingPID.imageUrl : undefined,
+        });
       } else {
         await createMutation.mutateAsync(values);
       }
